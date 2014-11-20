@@ -1,0 +1,64 @@
+<html>
+<head>
+</head>
+<body>
+<div id="1"></div>
+<div id="2"></div>
+<div id="3"></div>
+<script>
+//loading house data
+//house_data: size, location, price
+var house_data=[];
+house_data[0]=[132,13228,20000];
+house_data[1]=[148,13487,30000];
+house_data[2]=[122,13499,40000];
+
+var parameter=[0,0,0];		//parameter set
+
+var update=[0,0,0];		//update cache
+
+parameter.converge_test=function(beta)
+{
+	var sum=0;
+	for(var j=0;j<house_data.length;j++)
+	{
+		sum+=(house_data[j][2]-(parameter[0]*1+parameter[1]*house_data[j][0]+parameter[2]*house_data[j][1]))^2;
+	}
+	dev=0.5*sum;
+	
+	if(dev<beta)
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+parameter.update=function(a){
+	var sum=0;
+	
+	for(var i=0;i<parameter.length;i++)
+	{	
+		for(var j=0;j<house_data.length;j++)
+		{
+			sum+=(house_data[j][2]-(parameter[0]*1+parameter[1]*house_data[j][0]+parameter[2]*house_data[j][1]))*house_data[j][i];
+		}
+		update[i]=sum*a;
+	}
+	parameter+=update;
+}
+
+batchGradientDescent=function(converge_condition,learning_rate) 
+{
+	do
+	{
+		parameter.update(learning_rate);
+	}
+	while(parameter.converge_test(converge_condition)==false);
+}
+
+batchGradientDescent(0.01,0.01);
+
+</script>
+</body>
+</html>
