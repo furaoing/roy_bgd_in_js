@@ -2,9 +2,9 @@
 <head>
 </head>
 <body>
-<div id="1"></div>
-<div id="2"></div>
-<div id="3"></div>
+<div id="1"></div></br>
+<div id="2"></div></br>
+<div id="3"></div></br>
 <script>
 //loading house data
 //house_data: size, location, price
@@ -22,7 +22,7 @@ parameter.converge_test=function(beta)
 	var sum=0;
 	for(var j=0;j<house_data.length;j++)
 	{
-		sum+=(house_data[j][2]-(parameter[0]*1+parameter[1]*house_data[j][0]+parameter[2]*house_data[j][1]))^2;
+		sum+=Math.pow((house_data[j][2]-(this[0]*1+this[1]*house_data[j][0]+this[2]*house_data[j][1])),2);
 	}
 	dev=0.5*sum;
 	
@@ -37,24 +37,31 @@ parameter.converge_test=function(beta)
 parameter.update=function(a){
 	var sum=0;
 	
-	for(var i=0;i<parameter.length;i++)
+	for(var i=0;i<this.length;i++)
 	{	
 		for(var j=0;j<house_data.length;j++)
 		{
-			sum+=(house_data[j][2]-(parameter[0]*1+parameter[1]*house_data[j][0]+parameter[2]*house_data[j][1]))*house_data[j][i];
+			sum+=(house_data[j][2]-(this[0]*1+this[1]*house_data[j][0]+this[2]*house_data[j][1]))*house_data[j][i];
 		}
 		update[i]=sum*a;
 	}
-	parameter+=update;
+	alert(update[0]);
+	
+	for(var z=0;z<parameter.length;z++)
+	{
+		parameter[z]+=update[z];
+	}
 }
 
 batchGradientDescent=function(converge_condition,learning_rate) 
 {
-	do
+	var result=parameter.converge_test(converge_condition);
+
+	while(!result)
 	{
 		parameter.update(learning_rate);
+		result=parameter.converge_test(converge_condition);
 	}
-	while(parameter.converge_test(converge_condition)==false);
 }
 
 batchGradientDescent(0.01,0.01);
