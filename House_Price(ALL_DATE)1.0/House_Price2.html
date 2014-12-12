@@ -1,0 +1,82 @@
+<html>
+<head>
+<script src="jquery/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+<ul id="list">
+</ul>
+<script>
+//loading house data
+//house_data: size, location, price
+var g_dev=0;
+var house_data=[];
+var DOM_li=0;
+
+house_data[0]=[1,2,5];
+house_data[1]=[3,6,17];
+house_data[2]=[2,2,8];
+
+var parameter=[50,50,50];		//parameter set
+
+var update=[0,0,0];		//update cache
+
+converge_test=function(beta)
+{
+	var sum=0;
+	for(var j=0;j<house_data.length;j++)
+	{
+		sum+=Math.pow((house_data[j][2]-(parameter[0]*1+parameter[1]*house_data[j][0]+parameter[2]*house_data[j][1])),2);
+	}
+	dev=0.5*sum;
+	g_dev=dev;
+	
+	if(dev<beta)
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+update=function(a){
+	var sum=0;
+	
+	for(var i=0;i<parameter.length;i++)
+	{	
+		for(var j=0;j<house_data.length;j++)
+		{
+			sum+=((parameter[0]*1+parameter[1]*house_data[j][0]+parameter[2]*house_data[j][1])-house_data[j][2])*house_data[j][i];
+		}
+		update[i]=sum*a;
+	}
+	
+	for(var z=0;z<parameter.length;z++)
+	{
+		parameter[z]-=update[z];
+	}
+}
+
+batchGradientDescent=function(converge_condition,learning_rate,max_iter) 
+{
+	var result=converge_test(converge_condition);
+	var i=0;
+	
+	while(!result&&(i<max_iter))
+	{
+		update(learning_rate);
+		result=converge_test(converge_condition);
+		i++;
+		//DOM_li='<li>'+g_dev+'</li>';
+		
+     	DOM_li='<li>Iteration:'+i+',G_Dev:'+(g_dev-(g_dev-Math.floor(g_dev)))+',Para0:'+(parameter[0]-(parameter[0]-Math.floor(parameter[0])))+'</li>';
+		$("#list").append(DOM_li);
+	}
+}
+
+
+batchGradientDescent(0.1,0.001,10000);
+
+
+</script>
+</body>
+</html>
